@@ -11,6 +11,7 @@ import Support from "./pages/Support";
 import Profile from "./pages/Profile";
 import Sessions from "./pages/Sessions";
 import Cases from "./pages/Cases";
+import History from "./pages/History";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/sessions" element={<Sessions />} />
           <Route path="/cases" element={<Cases />} />
+          <Route path="/history" element={<History />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

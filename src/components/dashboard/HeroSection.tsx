@@ -48,18 +48,18 @@ export function HeroSection({ onStartTranslation }: HeroSectionProps) {
         </div>
 
         {/* Video preview */}
-        <div className="flex-1 max-w-md w-full">
-          <div className="relative aspect-video rounded-xl overflow-hidden glass-card group cursor-pointer hover-lift">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
+        <div className="flex-1 w-full max-w-2xl">
+          <div className="relative aspect-video rounded-2xl overflow-hidden glass-card group cursor-pointer hover-lift shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Play className="w-6 h-6 text-primary-foreground ml-1" />
+              <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <Play className="w-8 h-8 text-primary-foreground ml-1" />
               </div>
             </div>
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="glass-card px-4 py-2.5 flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-accent animate-pulse-soft" />
-                <span className="text-sm font-medium">How translation works in business</span>
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="glass-card px-5 py-3 flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse-soft" />
+                <span className="text-base font-medium">How translation works in business</span>
               </div>
             </div>
           </div>
