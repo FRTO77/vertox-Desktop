@@ -32,7 +32,7 @@ const Index = () => {
             
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <QuickActions onNavigate={handleNavigate} />
+                <QuickActions onNavigate={handleNavigate} activeSection={activeSection} />
               </div>
               <StatusWidget />
             </div>
@@ -56,14 +56,6 @@ const Index = () => {
         {activeSection === 'updates' && <UpdatesSection />}
 
         {activeSection === 'help' && <HelpSection />}
-
-        {activeSection === 'settings' && <SettingsSection />}
-
-        {activeSection === 'translate' && <LiveTranslation />}
-        
-        {activeSection === 'plans' && <PlansSection />}
-
-        {activeSection === 'updates' && <UpdatesSection />}
 
         {activeSection === 'settings' && <SettingsSection />}
       </main>

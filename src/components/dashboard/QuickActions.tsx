@@ -1,39 +1,40 @@
-import { Languages, Users, MessageSquare, Download, Mic, Headphones } from 'lucide-react';
+import { Languages, Users, MessageSquare, Download, Mic, Headphones, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface QuickActionsProps {
   onNavigate: (section: string) => void;
+  activeSection?: string;
 }
 
-export function QuickActions({ onNavigate }: QuickActionsProps) {
+export function QuickActions({ onNavigate, activeSection }: QuickActionsProps) {
   const actions = [
     {
+      id: 'translate',
       icon: Languages,
       title: 'Start Translation',
       description: 'Begin real-time voice translation',
-      variant: 'default' as const,
       onClick: () => onNavigate('translate'),
     },
     {
+      id: 'meeting',
       icon: Users,
       title: 'Create Meeting',
       description: 'Start a multilingual meeting room',
-      variant: 'outline' as const,
       onClick: () => {},
     },
     {
+      id: 'chat',
       icon: MessageSquare,
       title: 'Open LLM Chat',
       description: 'AI-powered translation assistant',
-      variant: 'outline' as const,
       onClick: () => {},
     },
     {
+      id: 'update',
       icon: Download,
       title: 'Download Update',
       description: 'Version 2.4.1 available',
-      variant: 'outline' as const,
-      onClick: () => {},
+      onClick: () => onNavigate('updates'),
     },
   ];
 
@@ -41,25 +42,37 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
     <section className="space-y-4">
       <h2 className="text-lg font-semibold">Quick Actions</h2>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {actions.map((action, index) => (
-          <button
-            key={action.title}
-            onClick={action.onClick}
-            className={`glass-card p-5 text-left hover-lift group ${
-              index === 0 ? 'bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20' : ''
-            }`}
-          >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors duration-200 ${
-              index === 0 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-secondary group-hover:bg-primary/10 text-muted-foreground group-hover:text-primary'
-            }`}>
-              <action.icon className="w-5 h-5" />
-            </div>
-            <h3 className="font-medium mb-1">{action.title}</h3>
-            <p className="text-sm text-muted-foreground">{action.description}</p>
-          </button>
-        ))}
+        {actions.map((action) => {
+          const isActive = activeSection === action.id;
+          const isHighlighted = action.id === 'translate';
+          
+          return (
+            <button
+              key={action.title}
+              onClick={action.onClick}
+              className={`glass-card p-5 text-left hover-lift group relative ${
+                isHighlighted || isActive
+                  ? 'bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20' 
+                  : ''
+              }`}
+            >
+              {isActive && (
+                <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+                  <Check className="w-3 h-3 text-accent-foreground" />
+                </div>
+              )}
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors duration-200 ${
+                isHighlighted || isActive
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-secondary group-hover:bg-primary/10 text-muted-foreground group-hover:text-primary'
+              }`}>
+                <action.icon className="w-5 h-5" />
+              </div>
+              <h3 className="font-medium mb-1">{action.title}</h3>
+              <p className="text-sm text-muted-foreground">{action.description}</p>
+            </button>
+          );
+        })}
       </div>
     </section>
   );

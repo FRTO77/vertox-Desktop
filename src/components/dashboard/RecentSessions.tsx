@@ -51,7 +51,6 @@ export function RecentSessions() {
   const audioRefs = useRef<Record<number, HTMLAudioElement>>({});
 
   const togglePlay = (sessionId: number, audioUrl: string) => {
-    // Pause all other audio
     Object.entries(audioRefs.current).forEach(([id, audio]) => {
       if (parseInt(id) !== sessionId && audio) {
         audio.pause();
@@ -90,9 +89,11 @@ export function RecentSessions() {
             <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <h2 className="text-lg font-semibold">Recent Sessions</h2>
           </div>
-          <Button variant="ghost" size="sm" className="text-primary">
-            View All
-          </Button>
+          <a href="/sessions">
+            <Button variant="ghost" size="sm" className="text-primary">
+              View All
+            </Button>
+          </a>
         </div>
       </div>
       

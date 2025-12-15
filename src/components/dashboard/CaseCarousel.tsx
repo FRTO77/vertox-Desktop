@@ -75,7 +75,7 @@ export function CaseCarousel() {
           <h2 className="text-xl font-semibold">Success Stories</h2>
           <p className="text-sm text-muted-foreground mt-1">See VertoX in action at global conferences</p>
         </div>
-        <a href="#" className="flex items-center gap-1 text-sm text-primary font-medium hover:underline">
+        <a href="/cases" className="flex items-center gap-1 text-sm text-primary font-medium hover:underline">
           View all cases
           <ArrowUpRight className="w-4 h-4" />
         </a>
