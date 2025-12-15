@@ -13,7 +13,8 @@ import {
   Mail,
   Plus,
   Check,
-  X
+  X,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -24,6 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 const languages = [
@@ -66,6 +73,10 @@ export function LiveTranslation() {
   // Counter for generating unique IDs
   const [micCounter, setMicCounter] = useState(0);
   const [hpCounter, setHpCounter] = useState(0);
+
+  // View All dialogs
+  const [showAllMics, setShowAllMics] = useState(false);
+  const [showAllHeadphones, setShowAllHeadphones] = useState(false);
 
   // Transcript
   const [transcriptEntries] = useState([
@@ -157,18 +168,31 @@ export function LiveTranslation() {
           <div className="grid md:grid-cols-2 gap-4">
             {/* Microphone Bluetooth Section */}
             <div className="glass-panel p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <Mic className="w-5 h-5 text-primary" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <Mic className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Microphones</h3>
+                    <p className="text-xs text-muted-foreground">{microphones.length} connected via Bluetooth</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Microphones</h3>
-                  <p className="text-xs text-muted-foreground">{microphones.length} connected via Bluetooth</p>
-                </div>
+                {microphones.length > 4 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="gap-1 text-primary"
+                    onClick={() => setShowAllMics(true)}
+                  >
+                    View All
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
               
               <div className="space-y-2">
-                {microphones.map((mic) => (
+                {microphones.slice(0, 4).map((mic) => (
                   <div key={mic.id} className="p-3 rounded-xl bg-primary/5 border border-primary/20">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -195,6 +219,15 @@ export function LiveTranslation() {
                   </div>
                 ))}
                 
+                {microphones.length > 4 && (
+                  <button 
+                    onClick={() => setShowAllMics(true)}
+                    className="w-full p-2 rounded-lg bg-secondary/50 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                  >
+                    +{microphones.length - 4} more devices
+                  </button>
+                )}
+                
                 <Button 
                   variant="outline" 
                   className="w-full gap-2 h-12"
@@ -218,18 +251,31 @@ export function LiveTranslation() {
 
             {/* Headphones Bluetooth Section */}
             <div className="glass-panel p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <Headphones className="w-5 h-5 text-primary" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <Headphones className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Headphones</h3>
+                    <p className="text-xs text-muted-foreground">{headphones.length} connected via Bluetooth</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Headphones</h3>
-                  <p className="text-xs text-muted-foreground">{headphones.length} connected via Bluetooth</p>
-                </div>
+                {headphones.length > 4 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="gap-1 text-primary"
+                    onClick={() => setShowAllHeadphones(true)}
+                  >
+                    View All
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
               
               <div className="space-y-2">
-                {headphones.map((hp) => (
+                {headphones.slice(0, 4).map((hp) => (
                   <div key={hp.id} className="p-3 rounded-xl bg-primary/5 border border-primary/20">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -256,6 +302,15 @@ export function LiveTranslation() {
                   </div>
                 ))}
                 
+                {headphones.length > 4 && (
+                  <button 
+                    onClick={() => setShowAllHeadphones(true)}
+                    className="w-full p-2 rounded-lg bg-secondary/50 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                  >
+                    +{headphones.length - 4} more devices
+                  </button>
+                )}
+                
                 <Button 
                   variant="outline" 
                   className="w-full gap-2 h-12"
@@ -277,6 +332,86 @@ export function LiveTranslation() {
               </div>
             </div>
           </div>
+
+          {/* All Microphones Dialog */}
+          <Dialog open={showAllMics} onOpenChange={setShowAllMics}>
+            <DialogContent className="sm:max-w-[500px] bg-background border-border max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Mic className="w-5 h-5 text-primary" />
+                  All Microphones ({microphones.length})
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+                {microphones.map((mic) => (
+                  <div key={mic.id} className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <Bluetooth className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{mic.name}</p>
+                          <p className="text-xs text-primary flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            Connected
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDisconnectMic(mic.id)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* All Headphones Dialog */}
+          <Dialog open={showAllHeadphones} onOpenChange={setShowAllHeadphones}>
+            <DialogContent className="sm:max-w-[500px] bg-background border-border max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Headphones className="w-5 h-5 text-primary" />
+                  All Headphones ({headphones.length})
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+                {headphones.map((hp) => (
+                  <div key={hp.id} className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <Bluetooth className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{hp.name}</p>
+                          <p className="text-xs text-primary flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            Connected
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDisconnectHeadphones(hp.id)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Language Selector */}
           <div className="glass-panel p-6">

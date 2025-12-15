@@ -97,9 +97,9 @@ const getChangeColor = (type: string) => {
     case 'feature':
       return 'text-primary';
     case 'fix':
-      return 'text-amber-500';
+      return 'text-orange-500';
     case 'improvement':
-      return 'text-accent';
+      return 'text-emerald-500';
     case 'security':
       return 'text-violet-500';
     default:
@@ -107,7 +107,11 @@ const getChangeColor = (type: string) => {
   }
 };
 
-export function UpdatesSection() {
+interface UpdatesSectionProps {
+  onNavigate?: (section: string) => void;
+}
+
+export function UpdatesSection({ onNavigate }: UpdatesSectionProps) {
   const [isChecking, setIsChecking] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -138,8 +142,8 @@ export function UpdatesSection() {
           {/* Current Version */}
           <div className="glass-card p-6 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-accent" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-primary/20 flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 text-emerald-500" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Current Version</p>
@@ -221,7 +225,7 @@ export function UpdatesSection() {
                   {/* Timeline dot */}
                   <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 ${
                     release.status === 'current' 
-                      ? 'bg-accent border-accent' 
+                      ? 'bg-emerald-500 border-emerald-500' 
                       : release.status === 'available'
                         ? 'bg-primary border-primary animate-pulse-soft'
                         : 'bg-background border-border'
@@ -231,7 +235,7 @@ export function UpdatesSection() {
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="text-lg font-semibold">v{release.version}</span>
                     {release.status === 'current' && (
-                      <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                      <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                         Installed
                       </Badge>
                     )}
@@ -269,7 +273,11 @@ export function UpdatesSection() {
               ))}
             </div>
 
-            <Button variant="ghost" className="w-full gap-2 text-muted-foreground">
+            <Button 
+              variant="ghost" 
+              className="w-full gap-2 text-muted-foreground"
+              onClick={() => onNavigate?.('history')}
+            >
               View Full History
               <ArrowRight className="w-4 h-4" />
             </Button>

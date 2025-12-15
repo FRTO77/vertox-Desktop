@@ -53,7 +53,7 @@ const Index = () => {
         
         {activeSection === 'plans' && <PlansSection />}
 
-        {activeSection === 'updates' && <UpdatesSection />}
+        {activeSection === 'updates' && <UpdatesSection onNavigate={handleNavigate} />}
 
         {activeSection === 'help' && <HelpSection />}
 
