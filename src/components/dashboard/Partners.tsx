@@ -45,7 +45,33 @@ const stats = [
   { icon: Sparkles, value: '50M+', label: 'Translations' },
 ];
 
+function PartnerCard({ partner }: { partner: typeof partners[0] }) {
+  return (
+    <div className="group relative glass-card p-5 hover-lift cursor-pointer overflow-hidden flex-shrink-0 w-[180px]">
+      {/* Gradient Background on Hover */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${partner.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+      
+      {/* Content */}
+      <div className="relative flex flex-col items-center text-center space-y-3">
+        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${partner.gradient} flex items-center justify-center font-bold text-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+          {partner.logo}
+        </div>
+        <div>
+          <p className="font-semibold text-sm">{partner.name}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{partner.description}</p>
+        </div>
+      </div>
+
+      {/* Decorative Corner */}
+      <div className={`absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br ${partner.gradient} opacity-5 rounded-full blur-2xl group-hover:opacity-20 transition-opacity duration-300`} />
+    </div>
+  );
+}
+
 export function Partners() {
+  // Duplicate partners for seamless loop
+  const duplicatedPartners = [...partners, ...partners];
+
   return (
     <section className="space-y-8 py-8">
       {/* Header */}
@@ -61,32 +87,20 @@ export function Partners() {
         </p>
       </div>
 
-      {/* Partners Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        {partners.map((partner, index) => (
-          <div 
-            key={partner.name}
-            className="group relative glass-card p-5 hover-lift cursor-pointer overflow-hidden"
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            {/* Gradient Background on Hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${partner.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-            
-            {/* Content */}
-            <div className="relative flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${partner.gradient} flex items-center justify-center font-bold text-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                {partner.logo}
-              </div>
-              <div>
-                <p className="font-semibold text-sm">{partner.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{partner.description}</p>
-              </div>
-            </div>
-
-            {/* Decorative Corner */}
-            <div className={`absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br ${partner.gradient} opacity-5 rounded-full blur-2xl group-hover:opacity-20 transition-opacity duration-300`} />
-          </div>
-        ))}
+      {/* Infinite Marquee */}
+      <div className="relative overflow-hidden">
+        {/* Gradient Fade Left */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+        
+        {/* Gradient Fade Right */}
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+        
+        {/* Marquee Track */}
+        <div className="flex gap-4 animate-marquee">
+          {duplicatedPartners.map((partner, index) => (
+            <PartnerCard key={`${partner.name}-${index}`} partner={partner} />
+          ))}
+        </div>
       </div>
 
       {/* Stats Section */}
