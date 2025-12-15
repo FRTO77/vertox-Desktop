@@ -128,6 +128,10 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
+                  <UserIcon className="w-4 h-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
                   <Settings className="w-4 h-4" />
                   <span>Settings</span>
