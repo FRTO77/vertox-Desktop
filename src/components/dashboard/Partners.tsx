@@ -1,39 +1,46 @@
 import { Building2, Shield, Sparkles } from 'lucide-react';
 
+import microsoftLogo from '@/assets/partners/microsoft.png';
+import googleCloudLogo from '@/assets/partners/google-cloud.svg';
+import awsLogo from '@/assets/partners/aws.png';
+import salesforceLogo from '@/assets/partners/salesforce.png';
+import zoomLogo from '@/assets/partners/zoom.png';
+import slackLogo from '@/assets/partners/slack.png';
+
 const partners = [
   { 
     name: 'Microsoft', 
-    logo: 'M',
+    logo: microsoftLogo,
     gradient: 'from-[#00A4EF] to-[#7FBA00]',
     description: 'Azure AI Partner'
   },
   { 
     name: 'Google Cloud', 
-    logo: 'G',
+    logo: googleCloudLogo,
     gradient: 'from-[#4285F4] to-[#34A853]',
     description: 'Translation API'
   },
   { 
     name: 'AWS', 
-    logo: 'A',
+    logo: awsLogo,
     gradient: 'from-[#FF9900] to-[#232F3E]',
     description: 'Infrastructure'
   },
   { 
     name: 'Salesforce', 
-    logo: 'S',
+    logo: salesforceLogo,
     gradient: 'from-[#00A1E0] to-[#1798C1]',
     description: 'CRM Integration'
   },
   { 
     name: 'Zoom', 
-    logo: 'Z',
+    logo: zoomLogo,
     gradient: 'from-[#2D8CFF] to-[#0B5CFF]',
     description: 'Video Platform'
   },
   { 
     name: 'Slack', 
-    logo: 'S',
+    logo: slackLogo,
     gradient: 'from-[#E01E5A] to-[#36C5F0]',
     description: 'Communication'
   },
@@ -53,8 +60,12 @@ function PartnerCard({ partner }: { partner: typeof partners[0] }) {
       
       {/* Content */}
       <div className="relative flex flex-col items-center text-center space-y-3">
-        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${partner.gradient} flex items-center justify-center font-bold text-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-          {partner.logo}
+        <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 p-2">
+          <img 
+            src={partner.logo} 
+            alt={`${partner.name} logo`} 
+            className="w-full h-full object-contain"
+          />
         </div>
         <div>
           <p className="font-semibold text-sm">{partner.name}</p>
