@@ -65,21 +65,19 @@ const scenarios = [
 ];
 
 const availableLanguages = [
-  { id: 'en', name: 'English' },
+  { id: 'ru', name: 'Russian' },
+  { id: 'kk', name: 'Kazakh' },
+  { id: 'uz', name: 'Uzbek' },
   { id: 'es', name: 'Spanish' },
+  { id: 'en', name: 'English' },
   { id: 'fr', name: 'French' },
   { id: 'de', name: 'German' },
   { id: 'ja', name: 'Japanese' },
-  { id: 'zh', name: 'Chinese' },
-  { id: 'pt', name: 'Portuguese' },
-  { id: 'ko', name: 'Korean' },
-  { id: 'it', name: 'Italian' },
-  { id: 'ru', name: 'Russian' },
 ];
 
 export function PlansSection() {
   const [showCustomBuilder, setShowCustomBuilder] = useState(false);
-  const [selectedLanguages, setSelectedLanguages] = useState(['en', 'es']);
+  const [selectedLanguages, setSelectedLanguages] = useState(['ru', 'en']);
   const [selectedScenarios, setSelectedScenarios] = useState<string[]>(['negotiations']);
   const [minutes, setMinutes] = useState([1000]);
 
