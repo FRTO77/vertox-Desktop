@@ -19,9 +19,11 @@ import {
   Moon,
   Sun,
   Headphones,
-  LogIn
+  LogIn,
+  Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLanguage, interfaceLanguages } from '@/contexts/LanguageContext';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -32,6 +34,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -56,13 +59,15 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
   };
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'translate', label: 'Live Translation' },
-    { id: 'plans', label: 'Plans' },
-    { id: 'updates', label: 'Updates' },
-    { id: 'help', label: 'Help' },
-    { id: 'settings', label: 'Settings' },
+    { id: 'dashboard', label: t('nav.dashboard') },
+    { id: 'translate', label: t('nav.liveTranslation') },
+    { id: 'plans', label: t('nav.plans') },
+    { id: 'updates', label: t('nav.updates') },
+    { id: 'help', label: t('nav.help') },
+    { id: 'settings', label: t('nav.settings') },
   ];
+
+  const currentLang = interfaceLanguages.find(l => l.code === language);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/30 rounded-none">
@@ -99,8 +104,34 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
           {/* Status indicator */}
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 text-sm">
             <span className="status-indicator active" />
-            <span className="text-muted-foreground">Connected</span>
+            <span className="text-muted-foreground">{t('header.connected')}</span>
           </div>
+
+          {/* Language Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-muted-foreground"
+              >
+                <Globe className="w-4 h-4" />
+                <span className="hidden sm:inline">{currentLang?.flag}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="glass-card">
+              {interfaceLanguages.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code)}
+                  className={`gap-3 cursor-pointer ${language === lang.code ? 'bg-primary/10 text-primary' : ''}`}
+                >
+                  <span className="text-lg">{lang.flag}</span>
+                  <span>{lang.name}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Theme toggle */}
           <Button
@@ -130,23 +161,23 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
                   <UserIcon className="w-4 h-4" />
-                  <span>Profile</span>
+                  <span>{t('header.profile')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
                   <Settings className="w-4 h-4" />
-                  <span>Settings</span>
+                  <span>{t('nav.settings')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Headphones className="w-4 h-4" />
-                  <span>Audio Devices</span>
+                  <span>{t('header.audioDevices')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('plans')}>
                   <CreditCard className="w-4 h-4" />
-                  <span>Plans & Billing</span>
+                  <span>{t('header.plansBilling')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Download className="w-4 h-4" />
-                  <span>Check for Updates</span>
+                  <span>{t('header.checkUpdates')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
@@ -154,7 +185,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
                   onClick={handleSignOut}
                 >
                   <LogOut className="w-4 h-4" />
-                  <span>Sign Out</span>
+                  <span>{t('header.signOut')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -166,7 +197,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
               onClick={() => navigate('/auth')}
             >
               <LogIn className="w-4 h-4" />
-              Sign In
+              {t('header.signIn')}
             </Button>
           )}
         </div>
