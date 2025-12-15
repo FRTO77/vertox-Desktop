@@ -36,6 +36,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'translate', label: 'Live Translation' },
     { id: 'plans', label: 'Plans' },
+    { id: 'settings', label: 'Settings' },
   ];
 
   return (
@@ -43,12 +44,12 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Globe className="w-4.5 h-4.5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-semibold tracking-tight">VertoX</span>
-          </div>
+          <button 
+            onClick={() => onNavigate('dashboard')}
+            className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          >
+            VertoX
+          </button>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-1">
@@ -101,7 +102,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
                 <p className="text-xs text-muted-foreground">alex@company.com</p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
                 <Settings className="w-4 h-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
