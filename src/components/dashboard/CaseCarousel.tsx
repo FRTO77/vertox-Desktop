@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { ImageLightbox } from '@/components/ui/image-lightbox';
 
 const conferenceImages = [
   {
@@ -52,6 +54,20 @@ const conferenceImages = [
 ];
 
 export function CaseCarousel() {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const handleImageClick = (index: number) => {
+    setSelectedIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const lightboxImages = conferenceImages.map(item => ({
+    src: item.image,
+    alt: item.title,
+    title: `${item.title} - ${item.location}`,
+  }));
+
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
@@ -68,20 +84,17 @@ export function CaseCarousel() {
       {/* Masonry-style Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {conferenceImages.map((item, index) => {
-          // Create varied heights for visual interest
           const isLarge = index === 0 || index === 5;
           const isMedium = index === 2 || index === 7;
           
           return (
             <div 
               key={item.id}
+              onClick={() => handleImageClick(index)}
               className={`group relative overflow-hidden rounded-2xl cursor-pointer ${
                 isLarge ? 'row-span-2 md:col-span-2 lg:col-span-1 lg:row-span-2' : 
                 isMedium ? 'row-span-1' : 'row-span-1'
               }`}
-              style={{ 
-                animationDelay: `${index * 100}ms`,
-              }}
             >
               <div className={`relative overflow-hidden ${isLarge ? 'aspect-[3/4]' : 'aspect-[4/3]'}`}>
                 <img
@@ -111,6 +124,14 @@ export function CaseCarousel() {
           );
         })}
       </div>
+
+      {/* Lightbox */}
+      <ImageLightbox
+        images={lightboxImages}
+        initialIndex={selectedIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
     </section>
   );
 }

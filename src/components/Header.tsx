@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -12,12 +15,13 @@ import {
   CreditCard, 
   Download, 
   LogOut, 
-  User,
+  User as UserIcon,
   Moon,
   Sun,
-  Globe,
-  Headphones
+  Headphones,
+  LogIn
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -25,11 +29,30 @@ interface HeaderProps {
 }
 
 export function Header({ onNavigate, activeSection }: HeaderProps) {
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
     document.documentElement.classList.toggle('dark');
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast.success('Signed out successfully');
   };
 
   const navItems = [
@@ -89,44 +112,59 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
 
-          {/* Account dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                  <User className="w-4 h-4 text-foreground" />
+          {/* Auth */}
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <UserIcon className="w-4 h-4 text-foreground" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 glass-card p-1.5">
+                <div className="px-3 py-2 mb-1">
+                  <p className="text-sm font-medium">{user.user_metadata?.full_name || 'User'}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 glass-card p-1.5">
-              <div className="px-3 py-2 mb-1">
-                <p className="text-sm font-medium">Alex Johnson</p>
-                <p className="text-xs text-muted-foreground">alex@company.com</p>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
-                <Settings className="w-4 h-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Headphones className="w-4 h-4" />
-                <span>Audio Devices</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('plans')}>
-                <CreditCard className="w-4 h-4" />
-                <span>Plans & Billing</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Download className="w-4 h-4" />
-                <span>Check for Updates</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer text-destructive focus:text-destructive">
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <Headphones className="w-4 h-4" />
+                  <span>Audio Devices</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('plans')}>
+                  <CreditCard className="w-4 h-4" />
+                  <span>Plans & Billing</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <Download className="w-4 h-4" />
+                  <span>Check for Updates</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => navigate('/auth')}
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </Button>
+          )}
         </div>
       </div>
     </header>
