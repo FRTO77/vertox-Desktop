@@ -23,6 +23,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { ProfileSection } from './ProfileSection';
 import { ThemeSection } from './ThemeSection';
+import { PaymentMethodsSection } from './PaymentMethodsSection';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -96,6 +97,9 @@ export function SettingsSection() {
         <ProfileSection />
         <ThemeSection />
       </div>
+
+      {/* Payment Methods */}
+      <PaymentMethodsSection />
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Audio Devices Section */}
