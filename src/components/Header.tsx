@@ -20,10 +20,12 @@ import {
   Sun,
   Headphones,
   LogIn,
-  Globe
+  Globe,
+  RefreshCw
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage, interfaceLanguages } from '@/contexts/LanguageContext';
+import { AudioDevicesDialog } from '@/components/AudioDevicesDialog';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -35,6 +37,8 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
   const [isDark, setIsDark] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const { language, setLanguage, t } = useLanguage();
+  const [audioDevicesOpen, setAudioDevicesOpen] = useState(false);
+  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -58,6 +62,32 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
     toast.success('Signed out successfully');
   };
 
+  const handleCheckForUpdates = async () => {
+    setIsCheckingUpdates(true);
+    
+    // Simulate checking for updates
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsCheckingUpdates(false);
+    
+    // Simulate finding an update
+    const hasUpdate = Math.random() > 0.5;
+    
+    if (hasUpdate) {
+      toast.success('Update Available!', {
+        description: 'Version 2.4.1 is ready to download.',
+        action: {
+          label: 'Update Now',
+          onClick: () => onNavigate('updates'),
+        },
+      });
+    } else {
+      toast.info('You\'re up to date!', {
+        description: 'You have the latest version (2.3.2).',
+      });
+    }
+  };
+
   const navItems = [
     { id: 'dashboard', label: t('nav.dashboard') },
     { id: 'translate', label: t('nav.liveTranslation') },
@@ -70,138 +100,154 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
   const currentLang = interfaceLanguages.find(l => l.code === language);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/30 rounded-none">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center gap-8">
-          <button 
-            onClick={() => onNavigate('dashboard')}
-            className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent hover:opacity-80 transition-opacity"
-          >
-            VertoX
-          </button>
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/30 rounded-none">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-8">
+            <button 
+              onClick={() => onNavigate('dashboard')}
+              className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            >
+              VertoX
+            </button>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  activeSection === item.id
-                    ? 'bg-secondary text-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Status indicator */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 text-sm">
-            <span className="status-indicator active" />
-            <span className="text-muted-foreground">{t('header.connected')}</span>
+            {/* Navigation */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigate(item.id)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    activeSection === item.id
+                      ? 'bg-secondary text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
           </div>
 
-          {/* Language Selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-2 text-muted-foreground"
-              >
-                <Globe className="w-4 h-4" />
-                <span className="hidden sm:inline">{currentLang?.flag}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="glass-card">
-              {interfaceLanguages.map((lang) => (
-                <DropdownMenuItem
-                  key={lang.code}
-                  onClick={() => setLanguage(lang.code)}
-                  className={`gap-3 cursor-pointer ${language === lang.code ? 'bg-primary/10 text-primary' : ''}`}
-                >
-                  <span className="text-lg">{lang.flag}</span>
-                  <span>{lang.name}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            {/* Status indicator */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 text-sm">
+              <span className="status-indicator active" />
+              <span className="text-muted-foreground">{t('header.connected')}</span>
+            </div>
 
-          {/* Theme toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="text-muted-foreground"
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
-
-          {/* Auth */}
-          {user ? (
+            {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                    <UserIcon className="w-4 h-4 text-foreground" />
-                  </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-muted-foreground"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span className="hidden sm:inline">{currentLang?.flag}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 glass-card p-1.5">
-                <div className="px-3 py-2 mb-1">
-                  <p className="text-sm font-medium">{user.user_metadata?.full_name || 'User'}</p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
-                  <UserIcon className="w-4 h-4" />
-                  <span>{t('header.profile')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
-                  <Settings className="w-4 h-4" />
-                  <span>{t('nav.settings')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 cursor-pointer">
-                  <Headphones className="w-4 h-4" />
-                  <span>{t('header.audioDevices')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('plans')}>
-                  <CreditCard className="w-4 h-4" />
-                  <span>{t('header.plansBilling')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 cursor-pointer">
-                  <Download className="w-4 h-4" />
-                  <span>{t('header.checkUpdates')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>{t('header.signOut')}</span>
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="glass-card">
+                {interfaceLanguages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`gap-3 cursor-pointer ${language === lang.code ? 'bg-primary/10 text-primary' : ''}`}
+                  >
+                    <span className="text-lg">{lang.flag}</span>
+                    <span>{lang.name}</span>
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <Button 
-              variant="default" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => navigate('/auth')}
+
+            {/* Theme toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="text-muted-foreground"
             >
-              <LogIn className="w-4 h-4" />
-              {t('header.signIn')}
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
-          )}
+
+            {/* Auth */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                      <UserIcon className="w-4 h-4 text-foreground" />
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 glass-card p-1.5">
+                  <div className="px-3 py-2 mb-1">
+                    <p className="text-sm font-medium">{user.user_metadata?.full_name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
+                    <UserIcon className="w-4 h-4" />
+                    <span>{t('header.profile')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('settings')}>
+                    <Settings className="w-4 h-4" />
+                    <span>{t('nav.settings')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setAudioDevicesOpen(true)}>
+                    <Headphones className="w-4 h-4" />
+                    <span>{t('header.audioDevices')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => onNavigate('plans')}>
+                    <CreditCard className="w-4 h-4" />
+                    <span>{t('header.plansBilling')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="gap-2 cursor-pointer" 
+                    onClick={handleCheckForUpdates}
+                    disabled={isCheckingUpdates}
+                  >
+                    {isCheckingUpdates ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    <span>{isCheckingUpdates ? 'Checking...' : t('header.checkUpdates')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>{t('header.signOut')}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="gap-2"
+                onClick={() => navigate('/auth')}
+              >
+                <LogIn className="w-4 h-4" />
+                {t('header.signIn')}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Audio Devices Dialog */}
+      <AudioDevicesDialog 
+        open={audioDevicesOpen} 
+        onOpenChange={setAudioDevicesOpen} 
+      />
+    </>
   );
 }
