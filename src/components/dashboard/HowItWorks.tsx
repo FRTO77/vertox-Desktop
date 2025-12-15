@@ -33,7 +33,7 @@ export function HowItWorks() {
               <p className="text-xs text-muted-foreground max-w-[160px]">{step.description}</p>
             </div>
             {index < steps.length - 1 && (
-              <ArrowRight className="hidden md:block w-5 h-5 text-border" />
+              <ArrowRight className="hidden md:block w-5 h-5 text-muted-foreground" />
             )}
           </div>
         ))}

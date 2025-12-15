@@ -64,7 +64,7 @@ export function QuickActions({ onNavigate, activeSection }: QuickActionsProps) {
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors duration-200 ${
                 isHighlighted || isActive
                   ? 'bg-primary text-primary-foreground' 
-                  : 'bg-secondary group-hover:bg-primary/10 text-muted-foreground group-hover:text-primary'
+                  : 'bg-secondary text-foreground group-hover:bg-primary/10 group-hover:text-primary'
               }`}>
                 <action.icon className="w-5 h-5" />
               </div>
@@ -86,8 +86,8 @@ export function StatusWidget() {
       <div className="space-y-3">
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-              <Mic className="w-4 h-4 text-accent" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Mic className="w-4 h-4 text-primary" />
             </div>
             <div>
               <p className="text-sm font-medium">Microphone</p>
