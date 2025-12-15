@@ -11,6 +11,7 @@ import { LiveTranslation } from '@/components/translation/LiveTranslation';
 import { PlansSection } from '@/components/plans/PlansSection';
 import { SettingsSection } from '@/components/settings/SettingsSection';
 import { UpdatesSection } from '@/components/updates/UpdatesSection';
+import { HelpSection } from '@/components/help/HelpSection';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -39,19 +40,24 @@ const Index = () => {
             <HowItWorks />
             
             <CaseCarousel />
+
+            <Testimonials />
             
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <RecentSessions />
-              </div>
-              <div className="space-y-6">
-                <Testimonials />
-              </div>
-            </div>
+            <RecentSessions />
 
             <Partners />
           </div>
         )}
+
+        {activeSection === 'translate' && <LiveTranslation />}
+        
+        {activeSection === 'plans' && <PlansSection />}
+
+        {activeSection === 'updates' && <UpdatesSection />}
+
+        {activeSection === 'help' && <HelpSection />}
+
+        {activeSection === 'settings' && <SettingsSection />}
 
         {activeSection === 'translate' && <LiveTranslation />}
         
