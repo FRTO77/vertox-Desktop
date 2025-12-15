@@ -89,11 +89,18 @@ export function RecentSessions() {
             <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <h2 className="text-lg font-semibold">Recent Sessions</h2>
           </div>
-          <a href="/sessions">
-            <Button variant="ghost" size="sm" className="text-primary">
-              View All
-            </Button>
-          </a>
+          <div className="flex gap-2">
+            <a href="/history">
+              <Button variant="ghost" size="sm" className="text-muted-foreground">
+                Full History
+              </Button>
+            </a>
+            <a href="/sessions">
+              <Button variant="ghost" size="sm" className="text-primary">
+                View All
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
       

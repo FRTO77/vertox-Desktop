@@ -6,7 +6,9 @@ import {
   Globe, 
   Volume2,
   Check,
-  Sparkles
+  Sparkles,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +23,18 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { ProfileSection } from './ProfileSection';
 import { ThemeSection } from './ThemeSection';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 const microphones = [
   { id: 'default', name: 'System Default', type: 'Built-in' },
@@ -313,6 +327,123 @@ export function SettingsSection() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="glass-card p-6 border-destructive/20">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+            <Trash2 className="w-5 h-5 text-destructive" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+            <p className="text-sm text-muted-foreground">Irreversible actions</p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-destructive/20 bg-destructive/5">
+            <div>
+              <p className="font-medium">Clear All Sessions</p>
+              <p className="text-xs text-muted-foreground">Delete all translation history and transcripts</p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground">
+                  Clear Sessions
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-background border-border">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                    Clear All Sessions?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete all your translation sessions and transcripts. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => toast.success('All sessions have been cleared')}
+                  >
+                    Yes, Clear All
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+
+          <div className="flex items-center justify-between p-4 rounded-xl border border-destructive/20 bg-destructive/5">
+            <div>
+              <p className="font-medium">Reset All Settings</p>
+              <p className="text-xs text-muted-foreground">Restore all settings to their default values</p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground">
+                  Reset Settings
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-background border-border">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                    Reset All Settings?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will reset all your preferences, language settings, and configurations to their defaults. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => toast.success('Settings have been reset to defaults')}
+                  >
+                    Yes, Reset All
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+
+          <div className="flex items-center justify-between p-4 rounded-xl border border-destructive/20 bg-destructive/5">
+            <div>
+              <p className="font-medium">Delete Account</p>
+              <p className="text-xs text-muted-foreground">Permanently delete your account and all data</p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  Delete Account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-background border-border">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                    Delete Your Account?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete your account, all sessions, settings, and personal data. This action is irreversible.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => toast.success('Account deletion request submitted')}
+                  >
+                    Yes, Delete My Account
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
