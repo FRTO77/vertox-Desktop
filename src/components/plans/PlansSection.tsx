@@ -151,7 +151,7 @@ export function PlansSection() {
             <ul className="space-y-3 mb-6">
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-center gap-2 text-sm">
-                  <Check className="w-4 h-4 text-accent flex-shrink-0" />
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span>{feature}</span>
                 </li>
               ))}

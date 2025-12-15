@@ -113,7 +113,7 @@ export function StatusWidget() {
         <div className="pt-2 border-t border-border">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Latency</span>
-            <span className="font-medium text-accent">42ms</span>
+            <span className="font-medium text-primary">42ms</span>
           </div>
           <div className="flex items-center justify-between text-sm mt-2">
             <span className="text-muted-foreground">Languages</span>

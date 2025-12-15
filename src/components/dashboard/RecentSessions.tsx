@@ -86,7 +86,7 @@ export function RecentSessions() {
       <div className="p-5 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <h2 className="text-lg font-semibold">Recent Sessions</h2>
           </div>
           <div className="flex gap-2">
