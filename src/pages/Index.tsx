@@ -10,6 +10,7 @@ import { HowItWorks } from '@/components/dashboard/HowItWorks';
 import { LiveTranslation } from '@/components/translation/LiveTranslation';
 import { PlansSection } from '@/components/plans/PlansSection';
 import { SettingsSection } from '@/components/settings/SettingsSection';
+import { UpdatesSection } from '@/components/updates/UpdatesSection';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -55,6 +56,8 @@ const Index = () => {
         {activeSection === 'translate' && <LiveTranslation />}
         
         {activeSection === 'plans' && <PlansSection />}
+
+        {activeSection === 'updates' && <UpdatesSection />}
 
         {activeSection === 'settings' && <SettingsSection />}
       </main>
