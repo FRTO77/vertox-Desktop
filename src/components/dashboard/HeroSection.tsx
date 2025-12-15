@@ -19,7 +19,7 @@ export function HeroSection({ onStartTranslation }: HeroSectionProps) {
       <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-center">
         {/* Text content */}
         <div className="flex-1 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
             <span className="status-indicator active" />
             Real-time Translation
           </div>
@@ -58,7 +58,7 @@ export function HeroSection({ onStartTranslation }: HeroSectionProps) {
             </div>
             <div className="absolute bottom-6 left-6 right-6">
               <div className="glass-card px-5 py-3 flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse-soft" />
+                <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse-soft" />
                 <span className="text-base font-medium">How translation works in business</span>
               </div>
             </div>

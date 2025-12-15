@@ -123,8 +123,8 @@ export function LiveTranslation() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-sm">
-            <Wifi className="w-4 h-4 text-accent" />
-            <span className="text-muted-foreground">42ms latency</span>
+            <Wifi className="w-4 h-4 text-primary" />
+            <span className="text-foreground">42ms latency</span>
           </div>
         </div>
       </div>
@@ -320,7 +320,7 @@ export function LiveTranslation() {
             <div className="mt-6 pt-4 border-t border-border">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Translation Confidence</span>
-                <span className="font-semibold text-accent">{confidence}%</span>
+                <span className="font-semibold text-primary">{confidence}%</span>
               </div>
               <div className="mt-2 h-2 rounded-full bg-secondary overflow-hidden">
                 <div 
