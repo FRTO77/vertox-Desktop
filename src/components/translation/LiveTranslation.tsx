@@ -34,14 +34,14 @@ import {
 import { toast } from 'sonner';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'ru', name: 'Russian', flag: '🇷🇺' },
+  { code: 'kk', name: 'Kazakh', flag: '🇰🇿' },
+  { code: 'uz', name: 'Uzbek', flag: '🇺🇿' },
   { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'fr', name: 'French', flag: '🇫🇷' },
   { code: 'de', name: 'German', flag: '🇩🇪' },
   { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
-  { code: 'pt', name: 'Portuguese', flag: '🇧🇷' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
 ];
 
 const voices = [
@@ -59,8 +59,8 @@ interface BluetoothDevice {
 
 export function LiveTranslation() {
   const [isActive, setIsActive] = useState(false);
-  const [sourceLanguage, setSourceLanguage] = useState('en');
-  const [targetLanguage, setTargetLanguage] = useState('es');
+  const [sourceLanguage, setSourceLanguage] = useState('ru');
+  const [targetLanguage, setTargetLanguage] = useState('en');
   const [noiseLevel, setNoiseLevel] = useState([50]);
   const [confidence, setConfidence] = useState(94);
   
