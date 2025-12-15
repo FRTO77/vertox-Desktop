@@ -3,12 +3,9 @@ import {
   Mic, 
   Headphones, 
   Bell, 
-  BellOff, 
   Globe, 
   Volume2,
-  Monitor,
   Check,
-  ChevronDown,
   Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { ProfileSection } from './ProfileSection';
+import { ThemeSection } from './ThemeSection';
 
 const microphones = [
   { id: 'default', name: 'System Default', type: 'Built-in' },
@@ -75,7 +74,13 @@ export function SettingsSection() {
       {/* Page Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Configure your devices, notifications, and language preferences</p>
+        <p className="text-muted-foreground">Configure your profile, devices, theme, and preferences</p>
+      </div>
+
+      {/* Profile & Theme Row */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ProfileSection />
+        <ThemeSection />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
