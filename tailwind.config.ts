@@ -71,7 +71,11 @@ export default {
         'card': 'var(--shadow-card)',
         'glow': 'var(--emerald-glow)',
       },
-      keyframes: {
+keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -99,6 +103,7 @@ export default {
         "fade-in": "fade-in 0.3s ease-out forwards",
         "scale-in": "scale-in 0.2s ease-out forwards",
         "slide-in-right": "slide-in-right 0.3s ease-out forwards",
+        "marquee": "marquee 40s linear infinite",
       },
       transitionTimingFunction: {
         'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',

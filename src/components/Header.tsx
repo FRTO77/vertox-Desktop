@@ -37,6 +37,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
     { id: 'translate', label: 'Live Translation' },
     { id: 'plans', label: 'Plans' },
     { id: 'updates', label: 'Updates' },
+    { id: 'help', label: 'Help' },
     { id: 'settings', label: 'Settings' },
   ];
 
