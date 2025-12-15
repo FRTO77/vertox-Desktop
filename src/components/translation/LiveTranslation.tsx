@@ -57,11 +57,15 @@ export function LiveTranslation() {
   const [noiseLevel, setNoiseLevel] = useState([50]);
   const [confidence, setConfidence] = useState(94);
   
-  // Bluetooth devices
-  const [microphone, setMicrophone] = useState<BluetoothDevice | null>(null);
-  const [headphones, setHeadphones] = useState<BluetoothDevice | null>(null);
+  // Bluetooth devices - now arrays for multiple devices
+  const [microphones, setMicrophones] = useState<BluetoothDevice[]>([]);
+  const [headphones, setHeadphones] = useState<BluetoothDevice[]>([]);
   const [isConnectingMic, setIsConnectingMic] = useState(false);
   const [isConnectingHeadphones, setIsConnectingHeadphones] = useState(false);
+
+  // Counter for generating unique IDs
+  const [micCounter, setMicCounter] = useState(0);
+  const [hpCounter, setHpCounter] = useState(0);
 
   // Transcript
   const [transcriptEntries] = useState([
@@ -71,13 +75,22 @@ export function LiveTranslation() {
     { id: 4, speaker: 'Speaker 2', lang: 'ES', text: 'Gracias por unirse a nosotros. Comencemos con el resumen financiero.', time: '14:32:28', translated: true },
   ]);
 
+  const micNames = ['Blue Yeti Pro BT', 'Shure MV7', 'Rode NT-USB', 'Audio-Technica AT2020', 'HyperX QuadCast'];
+  const hpNames = ['AirPods Pro', 'Sony WH-1000XM5', 'Bose QC45', 'Jabra Elite 85h', 'Sennheiser Momentum 4'];
+
   const handleConnectMicrophone = async () => {
     setIsConnectingMic(true);
     // Simulate Bluetooth connection
     setTimeout(() => {
-      setMicrophone({ id: 'mic-1', name: 'Blue Yeti Pro BT', connected: true });
+      const newMic: BluetoothDevice = { 
+        id: `mic-${micCounter}`, 
+        name: micNames[micCounter % micNames.length], 
+        connected: true 
+      };
+      setMicrophones(prev => [...prev, newMic]);
+      setMicCounter(prev => prev + 1);
       setIsConnectingMic(false);
-      toast.success('Microphone connected via Bluetooth');
+      toast.success(`${newMic.name} connected via Bluetooth`);
     }, 1500);
   };
 
@@ -85,20 +98,28 @@ export function LiveTranslation() {
     setIsConnectingHeadphones(true);
     // Simulate Bluetooth connection
     setTimeout(() => {
-      setHeadphones({ id: 'hp-1', name: 'AirPods Pro', connected: true });
+      const newHp: BluetoothDevice = { 
+        id: `hp-${hpCounter}`, 
+        name: hpNames[hpCounter % hpNames.length], 
+        connected: true 
+      };
+      setHeadphones(prev => [...prev, newHp]);
+      setHpCounter(prev => prev + 1);
       setIsConnectingHeadphones(false);
-      toast.success('Headphones connected via Bluetooth');
+      toast.success(`${newHp.name} connected via Bluetooth`);
     }, 1500);
   };
 
-  const handleDisconnectMic = () => {
-    setMicrophone(null);
-    toast.info('Microphone disconnected');
+  const handleDisconnectMic = (id: string) => {
+    const mic = microphones.find(m => m.id === id);
+    setMicrophones(prev => prev.filter(m => m.id !== id));
+    toast.info(`${mic?.name || 'Microphone'} disconnected`);
   };
 
-  const handleDisconnectHeadphones = () => {
-    setHeadphones(null);
-    toast.info('Headphones disconnected');
+  const handleDisconnectHeadphones = (id: string) => {
+    const hp = headphones.find(h => h.id === id);
+    setHeadphones(prev => prev.filter(h => h.id !== id));
+    toast.info(`${hp?.name || 'Headphones'} disconnected`);
   };
 
   const handleSendTranscript = () => {
@@ -141,40 +162,42 @@ export function LiveTranslation() {
                   <Mic className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Microphone</h3>
-                  <p className="text-xs text-muted-foreground">Connect via Bluetooth</p>
+                  <h3 className="font-semibold">Microphones</h3>
+                  <p className="text-xs text-muted-foreground">{microphones.length} connected via Bluetooth</p>
                 </div>
               </div>
               
-              {microphone ? (
-                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <Bluetooth className="w-4 h-4 text-primary" />
+              <div className="space-y-2">
+                {microphones.map((mic) => (
+                  <div key={mic.id} className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <Bluetooth className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{mic.name}</p>
+                          <p className="text-xs text-primary flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            Connected
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">{microphone.name}</p>
-                        <p className="text-xs text-primary flex items-center gap-1">
-                          <Check className="w-3 h-3" />
-                          Connected
-                        </p>
-                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDisconnectMic(mic.id)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={handleDisconnectMic}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
                   </div>
-                </div>
-              ) : (
+                ))}
+                
                 <Button 
                   variant="outline" 
-                  className="w-full gap-2 h-14"
+                  className="w-full gap-2 h-12"
                   onClick={handleConnectMicrophone}
                   disabled={isConnectingMic}
                 >
@@ -186,70 +209,72 @@ export function LiveTranslation() {
                   ) : (
                     <>
                       <Plus className="w-4 h-4" />
-                      Add Bluetooth Microphone
+                      Add Microphone
                     </>
                   )}
                 </Button>
-              )}
+              </div>
             </div>
 
             {/* Headphones Bluetooth Section */}
             <div className="glass-panel p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
-                  <Headphones className="w-5 h-5 text-accent" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <Headphones className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold">Headphones</h3>
-                  <p className="text-xs text-muted-foreground">Connect via Bluetooth</p>
+                  <p className="text-xs text-muted-foreground">{headphones.length} connected via Bluetooth</p>
                 </div>
               </div>
               
-              {headphones ? (
-                <div className="p-4 rounded-xl bg-accent/5 border border-accent/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                        <Bluetooth className="w-4 h-4 text-accent" />
+              <div className="space-y-2">
+                {headphones.map((hp) => (
+                  <div key={hp.id} className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <Bluetooth className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{hp.name}</p>
+                          <p className="text-xs text-primary flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            Connected
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">{headphones.name}</p>
-                        <p className="text-xs text-accent flex items-center gap-1">
-                          <Check className="w-3 h-3" />
-                          Connected
-                        </p>
-                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDisconnectHeadphones(hp.id)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={handleDisconnectHeadphones}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
                   </div>
-                </div>
-              ) : (
+                ))}
+                
                 <Button 
                   variant="outline" 
-                  className="w-full gap-2 h-14"
+                  className="w-full gap-2 h-12"
                   onClick={handleConnectHeadphones}
                   disabled={isConnectingHeadphones}
                 >
                   {isConnectingHeadphones ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       Searching...
                     </>
                   ) : (
                     <>
                       <Plus className="w-4 h-4" />
-                      Add Bluetooth Headphones
+                      Add Headphones
                     </>
                   )}
                 </Button>
-              )}
+              </div>
             </div>
           </div>
 
@@ -393,30 +418,30 @@ export function LiveTranslation() {
           <div className="glass-panel p-6 text-center">
             <button
               onClick={() => setIsActive(!isActive)}
-              disabled={!microphone || !headphones}
+              disabled={microphones.length === 0 || headphones.length === 0}
               className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto transition-all duration-300 ${
-                !microphone || !headphones 
+                microphones.length === 0 || headphones.length === 0 
                   ? 'bg-muted text-muted-foreground cursor-not-allowed'
                   : isActive 
                     ? 'bg-destructive text-destructive-foreground shadow-lg' 
-                    : 'bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-glow hover:scale-105'
+                    : 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground glow-accent hover:scale-105'
               }`}
             >
               {isActive ? <Pause className="w-10 h-10" /> : <Play className="w-10 h-10 ml-1" />}
             </button>
             <p className="mt-4 text-sm font-medium">
-              {!microphone || !headphones 
+              {microphones.length === 0 || headphones.length === 0 
                 ? 'Connect Devices' 
                 : isActive 
                   ? 'Translation Active' 
                   : 'Start Translation'}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {!microphone && !headphones 
+              {microphones.length === 0 && headphones.length === 0 
                 ? 'Connect microphone and headphones'
-                : !microphone 
+                : microphones.length === 0 
                   ? 'Connect microphone to start'
-                  : !headphones 
+                  : headphones.length === 0 
                     ? 'Connect headphones to start'
                     : isActive 
                       ? 'Click to pause' 
@@ -471,21 +496,45 @@ export function LiveTranslation() {
               Device Status
             </h3>
             
-            <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
-                <div className="flex items-center gap-2">
-                  <Mic className={`w-4 h-4 ${microphone ? 'text-primary' : 'text-muted-foreground'}`} />
-                  <span className="text-sm">{microphone ? microphone.name : 'No microphone'}</span>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {microphones.length > 0 ? (
+                microphones.map((mic) => (
+                  <div key={mic.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
+                    <div className="flex items-center gap-2">
+                      <Mic className="w-4 h-4 text-primary" />
+                      <span className="text-sm">{mic.name}</span>
+                    </div>
+                    <span className="status-indicator active" />
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
+                  <div className="flex items-center gap-2">
+                    <Mic className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">No microphone</span>
+                  </div>
+                  <span className="status-indicator" />
                 </div>
-                <span className={`status-indicator ${microphone ? 'active' : ''}`} />
-              </div>
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
-                <div className="flex items-center gap-2">
-                  <Headphones className={`w-4 h-4 ${headphones ? 'text-accent' : 'text-muted-foreground'}`} />
-                  <span className="text-sm">{headphones ? headphones.name : 'No headphones'}</span>
+              )}
+              {headphones.length > 0 ? (
+                headphones.map((hp) => (
+                  <div key={hp.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
+                    <div className="flex items-center gap-2">
+                      <Headphones className="w-4 h-4 text-primary" />
+                      <span className="text-sm">{hp.name}</span>
+                    </div>
+                    <span className="status-indicator active" />
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
+                  <div className="flex items-center gap-2">
+                    <Headphones className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">No headphones</span>
+                  </div>
+                  <span className="status-indicator" />
                 </div>
-                <span className={`status-indicator ${headphones ? 'active' : ''}`} />
-              </div>
+              )}
               <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
                 <div className="flex items-center gap-2">
                   <Volume2 className="w-4 h-4 text-muted-foreground" />
