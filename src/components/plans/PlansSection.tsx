@@ -25,6 +25,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+import { PaymentDialog } from './PaymentDialog';
+import { ContactSalesDialog } from './ContactSalesDialog';
 
 const TOTAL_STEPS = 7;
 
@@ -183,12 +186,17 @@ export function PlansSection() {
   
   // Step 4: Event Type
   const [eventType, setEventType] = useState('');
+  const [customEventType, setCustomEventType] = useState('');
   
   // Step 5: Participants
   const [participantRange, setParticipantRange] = useState('');
   
   // Step 6: Criticality
   const [criticalityLevel, setCriticalityLevel] = useState('');
+
+  // Dialogs
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [contactSalesDialogOpen, setContactSalesDialogOpen] = useState(false);
 
   const getEffectiveHours = () => {
     if (durationPreset === 'custom') {
@@ -268,7 +276,7 @@ export function PlansSection() {
       case 3:
         return durationPreset !== '' && (durationPreset !== 'custom' || customHours !== '');
       case 4:
-        return eventType !== '';
+        return eventType !== '' && (eventType !== 'other' || customEventType.trim() !== '');
       case 5:
         return participantRange !== '';
       case 6:
@@ -292,6 +300,42 @@ export function PlansSection() {
 
   const getLanguageName = (id: string) => {
     return [...sourceLanguages, ...targetLanguages].find(l => l.id === id)?.name || id;
+  };
+
+  const getConfigSummary = () => {
+    return `
+VertoX Translation Plan Configuration
+=====================================
+
+Source Language: ${getLanguageName(sourceLanguage)}
+Target Languages: ${selectedTargetLanguages.map(getLanguageName).join(', ')}
+Translation Format: ${translationFormats.find(f => f.id === translationFormat)?.name}
+Duration: ${durationPreset === 'custom' ? `${customHours} hours` : durationPresets.find(d => d.id === durationPreset)?.name}
+Event Type: ${eventType === 'other' ? customEventType : eventTypes.find(e => e.id === eventType)?.name}
+Participants: ${participantRanges.find(p => p.id === participantRange)?.name}
+Criticality Level: ${criticalityLevels.find(c => c.id === criticalityLevel)?.name}
+
+-------------------------------------
+Total Price: $${calculatePrice().toLocaleString()}
+Included Minutes: ${getTotalMinutes().toLocaleString()}
+-------------------------------------
+
+Generated on: ${new Date().toLocaleDateString()}
+    `.trim();
+  };
+
+  const handleDownloadProposal = () => {
+    const content = getConfigSummary();
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `VertoX_Proposal_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Proposal downloaded successfully');
   };
 
   const renderStepContent = () => {
@@ -319,8 +363,8 @@ export function PlansSection() {
 
             {/* Target Languages */}
             <div className="space-y-4">
-              <h3 className="font-medium text-lg">Target Language(s)</h3>
-              <p className="text-sm text-muted-foreground">Select one or more languages for translation output</p>
+              <h3 className="font-medium text-lg">Select Target Language(s)</h3>
+              <p className="text-sm text-muted-foreground">Click to select one or more languages for translation output</p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {targetLanguages
                   .filter(lang => lang.id !== sourceLanguage)
@@ -423,7 +467,12 @@ export function PlansSection() {
       case 4:
         return (
           <div className="space-y-4">
-            <Select value={eventType} onValueChange={setEventType}>
+            <Select value={eventType} onValueChange={(value) => {
+              setEventType(value);
+              if (value !== 'other') {
+                setCustomEventType('');
+              }
+            }}>
               <SelectTrigger className="w-full max-w-md">
                 <SelectValue placeholder="Select event type" />
               </SelectTrigger>
@@ -435,6 +484,19 @@ export function PlansSection() {
                 ))}
               </SelectContent>
             </Select>
+
+            {eventType === 'other' && (
+              <div className="space-y-2">
+                <Label htmlFor="customEventType">Please specify your event type</Label>
+                <Input
+                  id="customEventType"
+                  value={customEventType}
+                  onChange={(e) => setCustomEventType(e.target.value)}
+                  placeholder="Enter your event type..."
+                  className="max-w-md"
+                />
+              </div>
+            )}
           </div>
         );
 
@@ -522,7 +584,7 @@ export function PlansSection() {
                 <div className="flex justify-between py-2 border-b border-border/50">
                   <span className="text-muted-foreground">Event Type</span>
                   <span className="font-medium">
-                    {eventTypes.find(e => e.id === eventType)?.name}
+                    {eventType === 'other' ? customEventType : eventTypes.find(e => e.id === eventType)?.name}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-border/50">
@@ -553,15 +615,30 @@ export function PlansSection() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="default" size="lg" className="flex-1 gap-2">
+              <Button 
+                variant="default" 
+                size="lg" 
+                className="flex-1 gap-2"
+                onClick={() => setPaymentDialogOpen(true)}
+              >
                 <CreditCard className="w-5 h-5" />
                 Proceed to Payment
               </Button>
-              <Button variant="outline" size="lg" className="flex-1 gap-2">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="flex-1 gap-2"
+                onClick={handleDownloadProposal}
+              >
                 <Download className="w-5 h-5" />
                 Download Proposal
               </Button>
-              <Button variant="outline" size="lg" className="flex-1 gap-2">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="flex-1 gap-2"
+                onClick={() => setContactSalesDialogOpen(true)}
+              >
                 <Phone className="w-5 h-5" />
                 Contact Sales
               </Button>
@@ -672,6 +749,18 @@ export function PlansSection() {
           </Button>
         )}
       </div>
+
+      {/* Dialogs */}
+      <PaymentDialog 
+        open={paymentDialogOpen} 
+        onOpenChange={setPaymentDialogOpen} 
+        amount={calculatePrice()} 
+      />
+      <ContactSalesDialog 
+        open={contactSalesDialogOpen} 
+        onOpenChange={setContactSalesDialogOpen}
+        configSummary={getConfigSummary()}
+      />
     </div>
   );
 }
