@@ -5,7 +5,7 @@ import { QuickActions, StatusWidget } from '@/components/dashboard/QuickActions'
 import { CaseCarousel } from '@/components/dashboard/CaseCarousel';
 import { Testimonials } from '@/components/dashboard/Testimonials';
 import { Partners } from '@/components/dashboard/Partners';
-import { RecentSessions } from '@/components/dashboard/RecentSessions';
+
 import { HowItWorks } from '@/components/dashboard/HowItWorks';
 import { LiveTranslation } from '@/components/translation/LiveTranslation';
 import { PlansSection } from '@/components/plans/PlansSection';
@@ -43,7 +43,7 @@ const Index = () => {
 
             <Testimonials />
             
-            <RecentSessions />
+            
 
             <Partners />
           </div>
