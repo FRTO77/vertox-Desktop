@@ -64,8 +64,7 @@ export function AudioDevicesDialog({ open, onOpenChange }: AudioDevicesDialogPro
       if (outputs.length > 0 && !selectedSpeaker) {
         setSelectedSpeaker(outputs[0].deviceId);
       }
-    } catch (error) {
-      console.error('Error loading audio devices:', error);
+    } catch {
       toast.error('Could not access audio devices. Please check permissions.');
     } finally {
       setIsLoading(false);
@@ -100,8 +99,7 @@ export function AudioDevicesDialog({ open, onOpenChange }: AudioDevicesDialogPro
         setTestingMic(false);
         toast.info('Microphone test completed');
       }, 3000);
-    } catch (error) {
-      console.error('Error testing microphone:', error);
+    } catch {
       toast.error('Could not test microphone');
       setTestingMic(false);
     }

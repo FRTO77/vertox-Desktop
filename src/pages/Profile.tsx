@@ -92,8 +92,8 @@ const Profile = () => {
           notification_updates: data.notification_updates ?? false,
         });
       }
-    } catch (error: any) {
-      console.error('Error fetching profile:', error);
+    } catch {
+      // Profile fetch failed silently
     } finally {
       setIsLoading(false);
     }
@@ -103,9 +103,20 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+    // Allowed image extensions whitelist
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    // Validate file extension
+    if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+      toast.error('Please upload a valid image file (JPG, PNG, GIF, or WebP)');
+      return;
+    }
+
+    // Validate MIME type
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedMimeTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file');
       return;
     }
 
@@ -139,9 +150,8 @@ const Profile = () => {
 
       setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
       toast.success('Avatar updated successfully');
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to upload avatar');
-      console.error('Avatar upload error:', error);
     } finally {
       setIsUploading(false);
     }
@@ -167,9 +177,8 @@ const Profile = () => {
       if (error) throw error;
 
       toast.success('Profile updated successfully');
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to update profile');
-      console.error('Profile update error:', error);
     } finally {
       setIsSaving(false);
     }
