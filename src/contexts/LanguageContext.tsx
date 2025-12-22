@@ -72,7 +72,7 @@ const translations: Record<InterfaceLanguage, Record<string, string>> = {
     'partners.translations': 'Translations',
     
     // Footer
-    'footer.rights': '© 2024 VertoX. All rights reserved.',
+    'footer.rights': '© 2025 VertoX. All rights reserved.',
     'footer.privacy': 'Privacy',
     'footer.terms': 'Terms',
     'footer.support': 'Support',
