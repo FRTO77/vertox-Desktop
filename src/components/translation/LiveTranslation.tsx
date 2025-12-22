@@ -133,15 +133,56 @@ export function LiveTranslation() {
     toast.info(`${hp?.name || 'Headphones'} disconnected`);
   };
 
+  const formatTranscriptText = () => {
+    const sourceLang = languages.find(l => l.code === sourceLanguage)?.name || sourceLanguage;
+    const targetLang = languages.find(l => l.code === targetLanguage)?.name || targetLanguage;
+    const date = new Date().toLocaleDateString();
+    const time = new Date().toLocaleTimeString();
+    
+    let text = `Translation Transcript\n`;
+    text += `Date: ${date}\n`;
+    text += `Time: ${time}\n`;
+    text += `Languages: ${sourceLang} → ${targetLang}\n`;
+    text += `\n${'='.repeat(50)}\n\n`;
+    
+    transcriptEntries.forEach((entry) => {
+      text += `[${entry.time}] ${entry.speaker} (${entry.lang})${entry.translated ? ' [Translated]' : ''}\n`;
+      text += `${entry.text}\n\n`;
+    });
+    
+    return text;
+  };
+
   const handleSendTranscript = () => {
-    toast.success('Transcript sent successfully!', {
-      description: 'The conversation transcript has been sent to all participants.'
+    const transcriptText = formatTranscriptText();
+    const subject = encodeURIComponent(`Translation Transcript - ${new Date().toLocaleDateString()}`);
+    const body = encodeURIComponent(transcriptText);
+    
+    // Open Gmail compose with pre-filled subject and body
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+    window.open(gmailUrl, '_blank');
+    
+    toast.success('Gmail opened!', {
+      description: 'The transcript has been added to a new email draft.'
     });
   };
 
   const handleExportTranscript = () => {
+    const transcriptText = formatTranscriptText();
+    
+    // Create a blob and download as .txt file
+    const blob = new Blob([transcriptText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `transcript-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
     toast.success('Transcript exported!', {
-      description: 'The transcript has been downloaded as a PDF.'
+      description: 'The transcript has been downloaded as a text file.'
     });
   };
 
