@@ -62,6 +62,7 @@ export function LiveTranslation() {
   const [sourceLanguage, setSourceLanguage] = useState('ru');
   const [targetLanguage, setTargetLanguage] = useState('en');
   const [noiseLevel, setNoiseLevel] = useState([50]);
+  const [outputVolume, setOutputVolume] = useState([85]);
   const [confidence, setConfidence] = useState(94);
   
   // Bluetooth devices - now arrays for multiple devices
@@ -711,12 +712,22 @@ export function LiveTranslation() {
                   <span className="status-indicator" />
                 </div>
               )}
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
-                <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Output Volume</span>
+              <div className="py-2 px-3 rounded-lg bg-secondary/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">Output Volume</span>
+                  </div>
+                  <span className="text-sm font-medium">{outputVolume[0]}%</span>
                 </div>
-                <span className="text-sm font-medium">85%</span>
+                <Slider
+                  value={outputVolume}
+                  onValueChange={setOutputVolume}
+                  min={0}
+                  max={100}
+                  step={5}
+                  className="cursor-pointer"
+                />
               </div>
             </div>
           </div>
