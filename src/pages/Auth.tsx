@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email address');
@@ -20,6 +21,7 @@ const Auth = () => {
     password: '',
     name: '',
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -220,6 +222,22 @@ const Auth = () => {
               </div>
               {errors.password && <p className="text-destructive text-xs mt-1">{errors.password}</p>}
             </div>
+
+            {isLogin && (
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="remember-me" 
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                />
+                <label 
+                  htmlFor="remember-me" 
+                  className="text-sm text-muted-foreground cursor-pointer"
+                >
+                  Remember me
+                </label>
+              </div>
+            )}
 
             <Button type="submit" className="w-full h-12 gap-2" disabled={isLoading}>
               {isLoading ? (
