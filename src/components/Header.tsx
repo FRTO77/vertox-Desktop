@@ -59,6 +59,7 @@ export function Header({ onNavigate, activeSection }: HeaderProps) {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast.success('Signed out successfully');
+    navigate('/');
   };
 
   const handleCheckForUpdates = async () => {
