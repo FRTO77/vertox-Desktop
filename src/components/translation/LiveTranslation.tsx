@@ -673,7 +673,7 @@ export function LiveTranslation() {
               Device Status
             </h3>
             
-            <div className="space-y-2 max-h-40 overflow-y-auto">
+            <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hidden">
               {microphones.length > 0 ? (
                 microphones.map((mic) => (
                   <div key={mic.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/50">
