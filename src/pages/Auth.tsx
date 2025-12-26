@@ -9,7 +9,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one symbol');
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -20,6 +26,7 @@ const Auth = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
     name: '',
   });
   const [rememberMe, setRememberMe] = useState(false);
@@ -49,13 +56,23 @@ const Auth = () => {
       newErrors.email = emailResult.error.errors[0].message;
     }
 
-    const passwordResult = passwordSchema.safeParse(formData.password);
-    if (!passwordResult.success) {
-      newErrors.password = passwordResult.error.errors[0].message;
-    }
+    if (!isLogin) {
+      const passwordResult = passwordSchema.safeParse(formData.password);
+      if (!passwordResult.success) {
+        newErrors.password = passwordResult.error.errors[0].message;
+      }
 
-    if (!isLogin && !formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = 'Passwords do not match';
+      }
+
+      if (!formData.name.trim()) {
+        newErrors.name = 'Name is required';
+      }
+    } else {
+      if (!formData.password) {
+        newErrors.password = 'Password is required';
+      }
     }
 
     setErrors(newErrors);
@@ -293,6 +310,22 @@ const Auth = () => {
               </div>
               {errors.password && <p className="text-destructive text-xs mt-1">{errors.password}</p>}
             </div>
+
+            {!isLogin && (
+              <div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Confirm password"
+                    className="pl-10 pr-10 h-12"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  />
+                </div>
+                {errors.confirmPassword && <p className="text-destructive text-xs mt-1">{errors.confirmPassword}</p>}
+              </div>
+            )}
 
             {isLogin && (
               <div className="flex items-center justify-between">
