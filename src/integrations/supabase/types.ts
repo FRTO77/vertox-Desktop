@@ -17,9 +17,12 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          company: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
+          location: string | null
           notification_email: boolean | null
           notification_push: boolean | null
           notification_updates: boolean | null
@@ -29,9 +32,12 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          company?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
+          location?: string | null
           notification_email?: boolean | null
           notification_push?: boolean | null
           notification_updates?: boolean | null
@@ -41,9 +47,12 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          company?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
+          location?: string | null
           notification_email?: boolean | null
           notification_push?: boolean | null
           notification_updates?: boolean | null
