@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { ProfileSection } from './ProfileSection';
 import { ThemeSection } from './ThemeSection';
 import { PaymentMethodsSection } from './PaymentMethodsSection';
+import { AudioDevicesDialog } from '@/components/AudioDevicesDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -95,6 +96,7 @@ export function SettingsSection() {
   const [showAllHeadphones, setShowAllHeadphones] = useState(false);
   const [addMicDialogOpen, setAddMicDialogOpen] = useState(false);
   const [addHeadphonesDialogOpen, setAddHeadphonesDialogOpen] = useState(false);
+  const [testAudioDialogOpen, setTestAudioDialogOpen] = useState(false);
   const [newDeviceName, setNewDeviceName] = useState('');
   const [newDeviceType, setNewDeviceType] = useState('USB');
   
@@ -419,7 +421,11 @@ export function SettingsSection() {
           </div>
 
           {/* Test Audio */}
-          <Button variant="outline" className="w-full gap-2 mt-4">
+          <Button 
+            variant="outline" 
+            className="w-full gap-2 mt-4"
+            onClick={() => setTestAudioDialogOpen(true)}
+          >
             <Sparkles className="w-4 h-4" />
             Test Audio Configuration
           </Button>
@@ -747,6 +753,12 @@ export function SettingsSection() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Test Audio Configuration Dialog */}
+    <AudioDevicesDialog 
+      open={testAudioDialogOpen} 
+      onOpenChange={setTestAudioDialogOpen} 
+    />
     </>
   );
 }
