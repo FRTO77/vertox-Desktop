@@ -8,7 +8,11 @@ import {
   Check,
   Sparkles,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
 import { ProfileSection } from './ProfileSection';
 import { ThemeSection } from './ThemeSection';
 import { PaymentMethodsSection } from './PaymentMethodsSection';
@@ -35,16 +40,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
-const microphones = [
+interface AudioDevice {
+  id: string;
+  name: string;
+  type: string;
+}
+
+const defaultMicrophones: AudioDevice[] = [
   { id: 'default', name: 'System Default', type: 'Built-in' },
   { id: 'airpods', name: 'AirPods Pro', type: 'Bluetooth' },
   { id: 'yeti', name: 'Blue Yeti X', type: 'USB' },
   { id: 'rode', name: 'Rode NT-USB', type: 'USB' },
 ];
 
-const headphones = [
+const defaultHeadphones: AudioDevice[] = [
   { id: 'default', name: 'System Default', type: 'Built-in' },
   { id: 'airpods', name: 'AirPods Pro', type: 'Bluetooth' },
   { id: 'sony', name: 'Sony WH-1000XM5', type: 'Bluetooth' },
@@ -65,12 +83,20 @@ const languages = [
 ];
 
 export function SettingsSection() {
+  const [microphones, setMicrophones] = useState<AudioDevice[]>(defaultMicrophones);
+  const [headphones, setHeadphones] = useState<AudioDevice[]>(defaultHeadphones);
   const [selectedMic, setSelectedMic] = useState('yeti');
   const [selectedHeadphones, setSelectedHeadphones] = useState('sony');
   const [inputVolume, setInputVolume] = useState([75]);
   const [outputVolume, setOutputVolume] = useState([80]);
   const [speakerLang, setSpeakerLang] = useState('en');
   const [listenerLang, setListenerLang] = useState('es');
+  const [showAllMics, setShowAllMics] = useState(false);
+  const [showAllHeadphones, setShowAllHeadphones] = useState(false);
+  const [addMicDialogOpen, setAddMicDialogOpen] = useState(false);
+  const [addHeadphonesDialogOpen, setAddHeadphonesDialogOpen] = useState(false);
+  const [newDeviceName, setNewDeviceName] = useState('');
+  const [newDeviceType, setNewDeviceType] = useState('USB');
   
   const [notifications, setNotifications] = useState({
     sessionReminders: true,
@@ -84,7 +110,71 @@ export function SettingsSection() {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const handleAddMicrophone = () => {
+    if (!newDeviceName.trim()) {
+      toast.error('Please enter a device name');
+      return;
+    }
+    const newDevice: AudioDevice = {
+      id: `mic-${Date.now()}`,
+      name: newDeviceName.trim(),
+      type: newDeviceType,
+    };
+    setMicrophones(prev => [...prev, newDevice]);
+    setNewDeviceName('');
+    setNewDeviceType('USB');
+    setAddMicDialogOpen(false);
+    toast.success('Microphone added successfully');
+  };
+
+  const handleAddHeadphones = () => {
+    if (!newDeviceName.trim()) {
+      toast.error('Please enter a device name');
+      return;
+    }
+    const newDevice: AudioDevice = {
+      id: `hp-${Date.now()}`,
+      name: newDeviceName.trim(),
+      type: newDeviceType,
+    };
+    setHeadphones(prev => [...prev, newDevice]);
+    setNewDeviceName('');
+    setNewDeviceType('USB');
+    setAddHeadphonesDialogOpen(false);
+    toast.success('Device added successfully');
+  };
+
+  const handleRemoveMicrophone = (id: string) => {
+    setMicrophones(prev => prev.filter(m => m.id !== id));
+    if (selectedMic === id) {
+      setSelectedMic(microphones[0]?.id || '');
+    }
+    toast.success('Microphone removed');
+  };
+
+  const handleRemoveHeadphones = (id: string) => {
+    setHeadphones(prev => prev.filter(h => h.id !== id));
+    if (selectedHeadphones === id) {
+      setSelectedHeadphones(headphones[0]?.id || '');
+    }
+    toast.success('Device removed');
+  };
+
+  const handleTestMicrophone = (micId: string) => {
+    const mic = microphones.find(m => m.id === micId);
+    toast.success(`Testing microphone: ${mic?.name || 'Unknown'}`);
+  };
+
+  const handleTestHeadphones = (hpId: string) => {
+    const hp = headphones.find(h => h.id === hpId);
+    toast.success(`Testing speaker: ${hp?.name || 'Unknown'}`);
+  };
+
+  const displayedMics = showAllMics ? microphones : microphones.slice(0, 3);
+  const displayedHeadphones = showAllHeadphones ? headphones : headphones.slice(0, 3);
+
   return (
+    <>
     <div className="space-y-8 animate-fade-in">
       {/* Page Header */}
       <div className="space-y-2">
@@ -116,23 +206,36 @@ export function SettingsSection() {
 
           {/* Microphone Selection */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Mic className="w-4 h-4 text-primary" />
-              <span>Microphone</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Mic className="w-4 h-4 text-primary" />
+                <span>Microphone</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAddMicDialogOpen(true)}
+                className="gap-1 h-8"
+              >
+                <Plus className="w-3 h-3" />
+                Add
+              </Button>
             </div>
             
             <div className="grid gap-2">
-              {microphones.map((mic) => (
-                <button
+              {displayedMics.map((mic) => (
+                <div
                   key={mic.id}
-                  onClick={() => setSelectedMic(mic.id)}
-                  className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 text-left ${
+                  className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 ${
                     selectedMic === mic.id 
                       ? 'border-primary bg-primary/5 shadow-sm' 
                       : 'border-border hover:border-primary/50 hover:bg-secondary/30'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedMic(mic.id)}
+                    className="flex items-center gap-3 flex-1 text-left"
+                  >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                       selectedMic === mic.id ? 'bg-primary/20' : 'bg-secondary'
                     }`}>
@@ -142,15 +245,55 @@ export function SettingsSection() {
                       <p className="font-medium">{mic.name}</p>
                       <p className="text-xs text-muted-foreground">{mic.type}</p>
                     </div>
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleTestMicrophone(mic.id)}
+                      className="h-8 px-2 text-xs"
+                    >
+                      Test
+                    </Button>
+                    {selectedMic === mic.id ? (
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                      </div>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveMicrophone(mic.id)}
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    )}
                   </div>
-                  {selectedMic === mic.id && (
-                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                    </div>
-                  )}
-                </button>
+                </div>
               ))}
             </div>
+
+            {microphones.length > 3 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAllMics(!showAllMics)}
+                className="w-full gap-2 text-muted-foreground"
+              >
+                {showAllMics ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    View All ({microphones.length} devices)
+                  </>
+                )}
+              </Button>
+            )}
 
             {/* Input Volume */}
             <div className="space-y-3 pt-2">
@@ -170,23 +313,36 @@ export function SettingsSection() {
 
           {/* Headphones Selection */}
           <div className="space-y-4 pt-4 border-t border-border/50">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Headphones className="w-4 h-4 text-accent" />
-              <span>Headphones / Speakers</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Headphones className="w-4 h-4 text-accent" />
+                <span>Headphones / Speakers</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAddHeadphonesDialogOpen(true)}
+                className="gap-1 h-8"
+              >
+                <Plus className="w-3 h-3" />
+                Add
+              </Button>
             </div>
             
             <div className="grid gap-2">
-              {headphones.map((device) => (
-                <button
+              {displayedHeadphones.map((device) => (
+                <div
                   key={device.id}
-                  onClick={() => setSelectedHeadphones(device.id)}
-                  className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 text-left ${
+                  className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 ${
                     selectedHeadphones === device.id 
                       ? 'border-accent bg-accent/5 shadow-sm' 
                       : 'border-border hover:border-accent/50 hover:bg-secondary/30'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedHeadphones(device.id)}
+                    className="flex items-center gap-3 flex-1 text-left"
+                  >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                       selectedHeadphones === device.id ? 'bg-accent/20' : 'bg-secondary'
                     }`}>
@@ -196,15 +352,55 @@ export function SettingsSection() {
                       <p className="font-medium">{device.name}</p>
                       <p className="text-xs text-muted-foreground">{device.type}</p>
                     </div>
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleTestHeadphones(device.id)}
+                      className="h-8 px-2 text-xs"
+                    >
+                      Test
+                    </Button>
+                    {selectedHeadphones === device.id ? (
+                      <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                      </div>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveHeadphones(device.id)}
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    )}
                   </div>
-                  {selectedHeadphones === device.id && (
-                    <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                    </div>
-                  )}
-                </button>
+                </div>
               ))}
             </div>
+
+            {headphones.length > 3 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAllHeadphones(!showAllHeadphones)}
+                className="w-full gap-2 text-muted-foreground"
+              >
+                {showAllHeadphones ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    View All ({headphones.length} devices)
+                  </>
+                )}
+              </Button>
+            )}
 
             {/* Output Volume */}
             <div className="space-y-3 pt-2">
@@ -461,5 +657,96 @@ export function SettingsSection() {
         </Button>
       </div>
     </div>
+
+    {/* Add Microphone Dialog */}
+    <Dialog open={addMicDialogOpen} onOpenChange={setAddMicDialogOpen}>
+      <DialogContent className="sm:max-w-[400px] bg-background border-border">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Mic className="w-5 h-5 text-primary" />
+            Add Microphone
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="mic-name">Device Name</Label>
+            <Input
+              id="mic-name"
+              placeholder="e.g., Blue Yeti Pro"
+              value={newDeviceName}
+              onChange={(e) => setNewDeviceName(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="mic-type">Connection Type</Label>
+            <Select value={newDeviceType} onValueChange={setNewDeviceType}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border-border">
+                <SelectItem value="USB">USB</SelectItem>
+                <SelectItem value="Bluetooth">Bluetooth</SelectItem>
+                <SelectItem value="Built-in">Built-in</SelectItem>
+                <SelectItem value="3.5mm Jack">3.5mm Jack</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setAddMicDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleAddMicrophone}>
+            Add Microphone
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Add Headphones/Speakers Dialog */}
+    <Dialog open={addHeadphonesDialogOpen} onOpenChange={setAddHeadphonesDialogOpen}>
+      <DialogContent className="sm:max-w-[400px] bg-background border-border">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Headphones className="w-5 h-5 text-accent" />
+            Add Headphones / Speaker
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="hp-name">Device Name</Label>
+            <Input
+              id="hp-name"
+              placeholder="e.g., Sony WH-1000XM5"
+              value={newDeviceName}
+              onChange={(e) => setNewDeviceName(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="hp-type">Connection Type</Label>
+            <Select value={newDeviceType} onValueChange={setNewDeviceType}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border-border">
+                <SelectItem value="USB">USB</SelectItem>
+                <SelectItem value="Bluetooth">Bluetooth</SelectItem>
+                <SelectItem value="Built-in">Built-in</SelectItem>
+                <SelectItem value="3.5mm Jack">3.5mm Jack</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setAddHeadphonesDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleAddHeadphones}>
+            Add Device
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
