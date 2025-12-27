@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 
 interface PaymentMethod {
   id: string;
-  type: 'card' | 'paypal' | 'bank';
+  type: 'card' | 'paypal' | 'bank' | 'stripe';
   name: string;
   details: string;
   isDefault: boolean;
@@ -54,6 +54,7 @@ export function PaymentMethodsSection() {
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [routingNumber, setRoutingNumber] = useState('');
+  const [stripeEmail, setStripeEmail] = useState('');
 
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
@@ -92,6 +93,7 @@ export function PaymentMethodsSection() {
     setBankName('');
     setAccountNumber('');
     setRoutingNumber('');
+    setStripeEmail('');
     setPaymentType('card');
   };
 
@@ -125,6 +127,19 @@ export function PaymentMethodsSection() {
         details: paypalEmail,
         isDefault: paymentMethods.length === 0,
         icon: '🅿️'
+      };
+    } else if (paymentType === 'stripe') {
+      if (!stripeEmail) {
+        toast.error('Please enter your Stripe email');
+        return;
+      }
+      newMethod = {
+        id: Date.now().toString(),
+        type: 'stripe',
+        name: 'Stripe',
+        details: stripeEmail,
+        isDefault: paymentMethods.length === 0,
+        icon: '💜'
       };
     } else {
       if (!bankName || !accountNumber || !routingNumber) {
@@ -207,6 +222,11 @@ export function PaymentMethodsSection() {
                         🅿️ PayPal
                       </span>
                     </SelectItem>
+                    <SelectItem value="stripe">
+                      <span className="flex items-center gap-2">
+                        💜 Stripe
+                      </span>
+                    </SelectItem>
                     <SelectItem value="bank">
                       <span className="flex items-center gap-2">
                         🏦 Bank Account
@@ -271,6 +291,19 @@ export function PaymentMethodsSection() {
                     placeholder="your@email.com"
                     value={paypalEmail}
                     onChange={(e) => setPaypalEmail(e.target.value)}
+                    className="bg-background"
+                  />
+                </div>
+              )}
+
+              {paymentType === 'stripe' && (
+                <div className="space-y-2">
+                  <Label>Stripe Email</Label>
+                  <Input 
+                    type="email"
+                    placeholder="your@email.com"
+                    value={stripeEmail}
+                    onChange={(e) => setStripeEmail(e.target.value)}
                     className="bg-background"
                   />
                 </div>
